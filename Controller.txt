@@ -1,0 +1,21 @@
+﻿    @RequestMapping(value = "/getpdf", method = RequestMethod.GET)
+    public ResponseEntity<byte[]> getPDF() throws IOException {
+
+        File file = ResourceUtils.getFile("kobo/pdf/docker.pdf");
+
+        byte[] data = FileUtils.readFileToByteArray(file);
+        if(null != data) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setCacheControl("private");
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            // Here you have to set the actual filename of your pdf
+            String pdfFileName = "output.pdf";
+            headers.setContentDispositionFormData("attachment", URLEncoder.encode(pdfFileName, StandardCharsets.UTF_8.name()));
+            headers.setAccessControlAllowOrigin("http://localhost:8090");
+//        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+            ResponseEntity<byte[]> response = new ResponseEntity<>(data, headers, HttpStatus.OK);
+            return response;
+        }
+        return null;
+    }
